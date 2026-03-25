@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: ecoessentials_landing
+    database: ericpesci
+    schema:  ECOESSENTIALS_SOURCE_ECOESSENTIALS_TRANSACTIONAL_DB
+    tables:
+      - name: customer
+      - name: orderline
+      - name: order
+      - name: product
+      - name: promotional_campaign
+  - name: ecoessentials_landing_emails
+    database: ericpesci
+    schema: ECOESSENTIALS_EMAIL_SOURCE
+    tables:
+      - name: marketingemails
