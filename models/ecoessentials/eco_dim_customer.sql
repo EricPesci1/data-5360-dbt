@@ -9,17 +9,34 @@ WITH customers AS (
 ),
 
 marketing_emails AS (
-    SELECT DISTINCT customerid
+    SELECT DISTINCT
+        NULLIF(customerid, 'NULL') AS customerid,
+        subscriberfirstname,
+        subscriberid,
+        subscriberlastname,
+        subscriberemail
     FROM {{ source('ecoessentials_landing_emails', 'marketingemails') }}
 )
 
-select
-{{ dbt_utils.generate_surrogate_key(['column1', 'column2']) }} as cust_key,
-    c.*,
+SELECT
+    {{ dbt_utils.generate_surrogate_key([
+        'COALESCE(c.customer_email, m.subscriberemail)',
+        'COALESCE(c.customer_first_name, m.subscriberfirstname)',
+        'COALESCE(c.customer_last_name, m.subscriberlastname)'
+    ]) }} AS cust_key,
+    COALESCE(c.customer_id, TRY_CAST(m.customerid AS NUMBER)) AS customer_id,
+    COALESCE(c.customer_first_name, m.subscriberfirstname) AS customer_firstname,
+    COALESCE(c.customer_last_name, m.subscriberlastname) AS customer_lastname,
+    COALESCE(c.customer_email, m.subscriberemail) AS customer_email,
+    c.customer_address,
+    c.customer_city,
+    c.customer_state,
+    c.customer_zip,
+    c.customer_country,
     CASE
-        WHEN m.customerid IS NOT NULL THEN TRUE
+        WHEN m.subscriberid IS NOT NULL THEN TRUE
         ELSE FALSE
     END AS is_subscriber
 FROM customers c
-LEFT JOIN marketing_emails m
-    ON c.customerid = m.customerid
+FULL OUTER JOIN marketing_emails m
+    ON c.customer_id = m.customerid

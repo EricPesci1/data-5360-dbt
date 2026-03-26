@@ -6,8 +6,9 @@ sources:
     schema:  ECOESSENTIALS_SOURCE_ECOESSENTIALS_TRANSACTIONAL_DB
     tables:
       - name: customer
-      - name: orderline
+      - name: order_line
       - name: order
+        identifier: '"ORDER"'
       - name: product
       - name: promotional_campaign
   - name: ecoessentials_landing_emails
