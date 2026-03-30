@@ -5,14 +5,33 @@ models:
     description: "Oliver Customer Dimension"
   - name: oliver_dim_employee
     description: "Insurance Employee Dimension"
+    columns:
+      - name: employee_key
+        tests:
+          - unique
   - name: oliver_dim_date
     description: "Oliver Date Dimension"
   - name: oliver_dim_product
     description: "Oliver Product Dimension"
+    columns:
+      - name: product_name
+        tests:
+          - accepted_values:
+              values:
+                - "Small Coffee"
+                - "Marshmallows"
+                - "Small Popcorn"
+                - "Gummy Bears"
+                - "Chocolate Bar"
   - name: oliver_dim_store
     description: "Oliver Store Dimension"
   - name: fact_sales
-    description: "Insurance Sales Fact"
+    description: "Oliver Sales Fact"
+    columns:
+      - name: employee_key
+        description: "A foreign key to the employee dimension"
+        tests:
+          - not_null
   - name: stg_employee_certifications
     description: |
       Staging model for employee certifications.
@@ -22,3 +41,14 @@ models:
       Employee certification fact.
       The grain of this table is employee + date + certification.
       Each record represents a completed certification by a single employee.
+    columns:
+      - name: date_key
+        tests:
+          - relationships:
+              to: ref('oliver_dim_date')
+              field: date_key
+      - name: employee_key    
+        tests:
+          - relationships:
+              to: ref('oliver_dim_employee')
+              field: employee_key
