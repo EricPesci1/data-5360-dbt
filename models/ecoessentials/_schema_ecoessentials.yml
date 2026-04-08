@@ -1,0 +1,154 @@
+version: 2
+
+models:
+  - name: eco_dim_campaign
+    description: "EcoEssentials Campaign Dimension"
+    columns:
+      - name: campaign_key
+        description: "Surrogate key generated from campaign_id and campaign_name"
+        tests:
+          - unique
+          - not_null
+
+  - name: eco_dim_customer
+    description: "EcoEssentials Customer Dimension"
+    columns:
+      - name: cust_key
+        description: "Surrogate key generated from customer email, first name, and last name"
+        tests:
+          - unique
+          - not_null
+
+  - name: eco_dim_date
+    description: "EcoEssentials Date Dimension"
+    columns:
+      - name: date_key
+        description: "Surrogate key generated from date_day"
+        tests:
+          - unique
+          - not_null
+
+  - name: eco_dim_email
+    description: "EcoEssentials Email Dimension"
+    columns:
+      - name: email_key
+        description: "Surrogate key generated from subscriber email"
+        tests:
+          - unique
+          - not_null
+
+  - name: eco_dim_email_timestamp
+    description: "EcoEssentials Email Timestamp Dimension"
+    columns:
+      - name: email_timestamp_key
+        description: "Surrogate key generated from event timestamp"
+        tests:
+          - unique
+          - not_null
+
+  - name: eco_dim_event
+    description: "EcoEssentials Event Dimension"
+    columns:
+      - name: event_key
+        description: "Surrogate key generated from event type"
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        tests:
+          - accepted_values:
+              values:
+                - "CLICK"
+                - "SENT"
+                - "OPEN"
+
+  - name: eco_dim_product
+    description: "EcoEssentials Product Dimension"
+    columns:
+      - name: product_key
+        description: "Surrogate key generated from product_id and product_name"
+        tests:
+          - unique
+          - not_null
+
+  - name: eco_fact_email_event
+    description: |
+      EcoEssentials Email Event Fact.
+      Each record represents a marketing email event linking campaign, customer, email, event type, and timestamp.
+    columns:
+      - name: campaign_key
+        description: "A foreign key to the campaign dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_campaign')
+              field: campaign_key
+      - name: cust_key
+        description: "A foreign key to the customer dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_customer')
+              field: cust_key
+      - name: date_key
+        description: "A foreign key to the date dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_date')
+              field: date_key
+      - name: event_key
+        description: "A foreign key to the event dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_event')
+              field: event_key
+      - name: email_key
+        description: "A foreign key to the email dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_email')
+              field: email_key
+      - name: email_timestamp_key
+        description: "A foreign key to the email timestamp dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_email_timestamp')
+              field: email_timestamp_key
+
+  - name: eco_fact_order
+    description: |
+      EcoEssentials Order Fact.
+      Each record represents an order line linking product, campaign, customer, and date with quantity, discount, price, and final price.
+    columns:
+      - name: product_key
+        description: "A foreign key to the product dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_product')
+              field: product_key
+      - name: campaign_key
+        description: "A foreign key to the campaign dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_campaign')
+              field: campaign_key
+      - name: cust_key
+        description: "A foreign key to the customer dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_customer')
+              field: cust_key
+      - name: date_key
+        description: "A foreign key to the date dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('eco_dim_date')
+              field: date_key
